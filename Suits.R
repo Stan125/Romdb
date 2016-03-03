@@ -1,6 +1,11 @@
-#### Stani Suits : is my show going to get better or worse
+########### R x OMDB ##############
+###### Stanislaus Stadlmann #######
+# The motivation of this Script was
+# to obtain all ratings on OMDB
+# of a certain TV series.
 
-# devtools::install_github("hrbrmstr/omdbapi")
+# Install GitHub R Package
+devtools::install_github("hrbrmstr/omdbapi")
 
 # Packages
 library(XML)
@@ -8,10 +13,14 @@ library(omdbapi)
 library(dplyr)
 library(ggplot2)
 
-# Scrape IMDB Ratings
-frame <- search_by_title("Suits", type = "series")
-find_by_title("Suits")
-suits <- matrix(ncol = 3)
+# Do a search of the series/movie
+search_results <- search_by_title("Suits", type = "series")
+
+# Specify here which of the results is the right one
+title <- search_results[1, 1]
+
+
+suits <- matrix()
 ergebnis <- c()
 for (i in 1:5) {
   for (j in 1:20){
