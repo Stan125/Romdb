@@ -5,7 +5,7 @@
 # of a certain TV series.
 
 # Install GitHub R Package
-devtools::install_github("hrbrmstr/omdbapi")
+# devtools::install_github("hrbrmstr/omdbapi")
 
 # Packages
 library(XML)
@@ -19,32 +19,34 @@ search_results <- search_by_title("Suits", type = "series")
 # Specify here which of the results is the right one
 title <- search_results[1, 1]
 
-
-suits <- matrix()
+# Make containers
+suits <- matrix(ncol = 3)
 ergebnis <- c()
-for (i in 1:5) {
-  for (j in 1:20){
+
+# Starting values
+j <- 1
+# Pull data
+for (i in 1:6) {
+  j <- 1
+  while (nrow(ergebnis) == 1) {
     
-    # Daten von OMDB ziehen
-    ergebnis <- frame[1, 1] %>% 
-      as.character() %>%
-      find_by_title(.,
-                    season = i,
-                    episode = j) 
+    # Get data from OMDB, suppress error
+    ergebnis <- title %>% 
+          as.character() %>%
+          find_by_title(.,
+                        season = i,
+                        episode = j)
     
-    # Wenn nicht gefunden, next
-    if (nrow(ergebnis) == 1) {
-      
-      # IMDBRating rausziehen
-      ergebnis <- ergebnis %>% dplyr::select(imdbRating)
-      
-      # Dataframe füllen
-      suits <- rbind(suits,
-                     c(i, j, ergebnis))
-    } 
+    # IMDBRating rausziehen
+    ergebnis <- ergebnis %>% dplyr::select(imdbRating)
     
+    # Dataframe füllen
+    suits <- rbind(suits,
+                   c(i, j, ergebnis))
     
-  }
+    # Next iteration
+    j <- j + 1
+  } 
 }
 
 suits_clean <- data.frame(suits[2:nrow(suits), ])
