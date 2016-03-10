@@ -14,7 +14,7 @@ library(dplyr)
 library(ggplot2)
 
 # Do a search of the series/movie
-search_results <- search_by_title("The Office", type = "series")
+search_results <- search_by_title("Suits", type = "series")
 
 # Specify here which of the results is the right one
 title <- search_results[1, 1]
@@ -25,6 +25,7 @@ result <- matrix(nrow = 1)
 
 # Starting values
 i <- 1
+j <- 1
 # Pull data
 while (nrow(result) == 1) {
   if (i > 1 & j == 1) {
@@ -78,10 +79,6 @@ object_clean$IMDBRating <- as.numeric(object$IMDBRating)
 
 
 # Graph
-png(paste0(title,"IMDB.png"),
-    res = 125,
-    height = 900,
-    width = 1600)
 ggplot(data = object_clean, aes(x = episode.no,
                                 y = IMDBRating,
                                 col = Season)) +
@@ -90,6 +87,5 @@ ggplot(data = object_clean, aes(x = episode.no,
   ggtitle(paste0("IMDB Ratings of ", title, " episodes \n")) +
   theme_bw() +
   xlab("Episode No.")
-dev.off()
 
 
