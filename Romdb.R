@@ -14,7 +14,7 @@ library(dplyr)
 library(ggplot2)
 
 # Do a search of the series/movie
-search_results <- search_by_title("Suits", type = "series")
+search_results <- search_by_title("Scrubs", type = "series")
 
 # Specify here which of the results is the right one
 title <- search_results[1, 1]
