@@ -80,9 +80,9 @@ for (season in unique(object$Season)) {
   }
 }
 
-
-# Manual adjustments
-
+# Make factors
+object$Season <- as.factor(object$Season)
+object$Episode <- as.factor(object$Episode)
 
 # Graph
 ggplot(data = object, aes(x = episode.no,
