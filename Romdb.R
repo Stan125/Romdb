@@ -4,9 +4,6 @@
 # to obtain all ratings on OMDB
 # of a certain TV series.
 
-# Install GitHub R Package
-# devtools::install_github("hrbrmstr/omdbapi")
-
 # Packages
 library(httr)
 library(dplyr)
@@ -16,8 +13,12 @@ library(ggplot2)
 title <- "Game of Thrones"
 
 # Make containers
-object <- matrix(ncol = 3)
+object <- data.frame(Season = NA,
+                     Episode = NA, 
+                     imdbRating = NA,
+                     episode.no = NA)
 result <- matrix(nrow = 1)
+ep.no <- 0
 
 # Starting values
 i <- 1
@@ -50,38 +51,32 @@ while (!is.null(result)) {
     
     # Next season if no more episodes
     if (is.null(result)) {
-      result <- matrix(nrow = 1)
+      result <- 0
       break
     }
 
+    # Make episode no higher
+    ep.no <- ep.no + 1
+    
     # Fill container
-    object <- rbind(object,
-                   c(i, j, result))
+    object[ep.no, ] <- c(i, j, result, ep.no)
     
     # Next iteration
     j <- j + 1
   }
-  print(paste("Last episode of Season", i, "was episode", j - 1))
+  cat(paste("Last episode of Season", i, "was episode", j - 1, "\n"))
   i <- i + 1
 }
 
-# Make DF
-object <- data.frame(object[2:nrow(object), ])
-
-# Rename columns
-colnames(object) <- c("Season", "Episode", "IMDBRating")
-
-# Necessary transformations to new df
-object_clean <- data.frame(object)
-object_clean$episode.no <- 1:nrow(object_clean)
-object_clean$Season <- as.numeric(object$Season) %>% as.factor()
-object_clean$Episode <- as.numeric(object$Episode) %>% as.factor()
-object_clean$IMDBRating <- as.numeric(as.character(object$IMDBRating))
+# Necessary transformations
+object <- sapply(object, FUN = as.numeric)
+object <- as.data.frame(object)
 
 # Delete Season if only NA's
-for (season in unique(object_clean$Season)) {
-  if (all(is.na(object_clean[object_clean$Season == season, "IMDBRating"]))) {
-    object_clean <- object_clean[object_clean$Season != season, ]
+for (season in unique(object$Season)) {
+  if (all(is.na(object[object$Season == season, "imdbRating"]))) {
+    object <- object[object$Season != season, ]
+    cat("Season", season, "was deleted, because all Ratings were NA")
   }
 }
 
@@ -90,8 +85,8 @@ for (season in unique(object_clean$Season)) {
 
 
 # Graph
-ggplot(data = object_clean, aes(x = episode.no,
-                          y = IMDBRating,
+ggplot(data = object, aes(x = episode.no,
+                          y = imdbRating,
                           col = Season)) +
   geom_point() +
   stat_smooth(method = "lm") +
