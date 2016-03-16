@@ -10,6 +10,15 @@ get_tv_data <- function(name) {
   if (missing(name))
     stop("Need to specify name of TV series")
   
+  # Get some info about the name
+  query <- GET("http://www.omdbapi.com/", 
+               query = list(t = name,
+                            r = "json"))
+  query_parsed <- content(query, as = "parsed")
+  
+  if (query_parsed$Type != "series")
+    stop("This is not a TV series")
+  
   # Make containers
   object <- data.frame(Season = NA,
                        Episode = NA, 
@@ -83,5 +92,5 @@ get_tv_data <- function(name) {
   object$Episode <- as.factor(object$Episode)
   
   return(object)
-  rm(object)
+  rm(list = c("object", "query", "query_parsed", "result", "season", "ep.no", "i", "j"))
 }
